@@ -10,15 +10,14 @@ h1 {
     text-align: right;    
     max-width: 50%;
     padding: 20px 0;
+    background-color: lightgrey;
     border: 1px solid black;
     border-radius: 20px;
-    background-color: rgb(32, 32, 32);
-    
 }
 .songUl li {
     text-align: left;
     padding: 2px 30px;
-    color:white;
+    color:grey;
     font-weight: bold;
 }
 .songUl img {

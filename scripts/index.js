@@ -5,29 +5,12 @@
  * @param {String} songId - the ID of the song to play
  */
 function playSong(songId) {
-    // let songObj = getSong(songId);
-    // let songsDiv = document.getElementById('songs');
-    // songsDiv.append(createSongElement(songObj));
-}
-
-const sortedSongs = sortObjectsArray(player.songs, "title");
-const songsDiv = document.getElementById('songs');
-const songsTitle = document.createElement('h1');
-songsTitle.innerText = "Songs";
-songsDiv.append(songsTitle);
-for(let song of sortedSongs) {
-    const tempSong = {...song};
-    tempSong.duration = toMinutes(song.duration);
-    songsDiv.append(createSongElement(tempSong));
-}
-
-const sortedPlaylist = sortObjectsArray(player.playlists, "name");
-const playlistsDiv = document.getElementById('playlists');
-const playlistsTitle = document.createElement('h1');
-playlistsTitle.innerText = "Playlists";
-playlistsDiv.append(playlistsTitle);
-for(let playlist of sortedPlaylist) {
-    playlistsDiv.append(createPlaylistElement(playlist));
+    for(let song of player.songs) {
+        document.getElementById('song' + song.id).style.backgroundColor = "lightgrey";
+        if(song.id === songId) {
+            document.getElementById('song' + song.id).style.backgroundColor = 'lightgreen';
+        }
+    }
 }
 
 /**
@@ -37,7 +20,7 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
     const song = arguments[0];
     const children = buildSongList(song);
     const classes = ["songUl"];
-    const attrs = { onclick: `playSong(${id})`, name: "yosi"  }
+    const attrs = { onclick: `playSong(${id})`, id: "song" + id  }
     return createElement("ul", children, classes, attrs)
 }
 
@@ -47,7 +30,7 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
 function createPlaylistElement({ id, name, songs }) {
     const children = buildPlaylistList({name, songs: songs.length, duration: toMinutes(playlistDuration(id))});
     const classes = ["songUl"];
-    const attrs = {name: "shimon"};
+    const attrs = {id: "playlist" + id};
     return createElement("ul", children, classes, attrs)
 }
 
@@ -79,6 +62,32 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 // console.log(createElement("fff", ["a", "b"], ["c", "d"], {name: "blabla"}));
 
 // You can write more code below this line
+const sortedSongs = sortObjectsArray(player.songs, "title");
+const songsDiv = document.getElementById('songs');
+insertToDiv(songsDiv, sortedSongs);
+
+const sortedPlaylist = sortObjectsArray(player.playlists, "name");
+const playlistsDiv = document.getElementById('playlists');
+insertToDiv(playlistsDiv, sortedPlaylist);
+
+function insertToDiv(div, sortedArr) {
+    // const sortedSongs = sortObjectsArray(player.songs, "title");
+    // const songsDiv = document.getElementById('songs');
+    const title = document.createElement('h1');
+    title.innerText = div.id;
+    div.append(title);
+    for(let obj of sortedArr) {
+        const tempObj = {...obj};
+        if(obj.hasOwnProperty('duration')) {
+            tempObj.duration = toMinutes(obj.duration);
+            div.append(createSongElement(tempObj));
+        }
+        else {
+            div.append(createPlaylistElement(tempObj));
+        }
+    }
+}
+
 function buildSongList(song) {
     const list = [];
     for(let key in song) {
@@ -107,7 +116,3 @@ function buildPlaylistList(playlist) {
     }
     return list;
 }
-// let obj = {onclick: 'ggg', name: 'fff'};
-// for(let attr in obj) {
-//     console.log(obj[attr]);
-// }
