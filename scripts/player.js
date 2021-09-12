@@ -1,3 +1,40 @@
+function sortObjectsArray(arr, property) {
+    const sortedObjects = [];
+    for (let obj of arr) {
+        sortedObjects.push(obj);
+    }
+    sortedObjects.sort((a, b) => {if(a[property] < b[property]) return -1;});
+    return sortedObjects;
+}
+
+function getSong(id) {
+    const song = player.songs.find(x => x.id === id);
+    return song;
+}
+
+function getPlaylist(id) {
+    const playlist = player.playlists.find(x => x.id === id);
+    return playlist;
+}
+
+function toMinutes(sec) {
+    const minFormat = ["mm", "ss"];
+    minFormat[1] = sec % 60 < 10 ? "0" + sec % 60: sec % 60;
+    minFormat[0] = sec / 60 < 10 ? "0" + Math.floor(sec / 60): Math.floor(sec / 60);
+    return minFormat.join(':');
+}
+
+function sumDuration(arr) {
+    if(arr.length === 0) return 0;
+    return getSong(arr.pop()).duration + sumDuration(arr.slice(0, arr.length));
+}
+
+function playlistDuration(id) {
+    const playlist = getPlaylist(id);
+    const secondsArr = [...playlist.songs];
+    return sumDuration(secondsArr);
+}
+
 const player = {
     songs: [
         {
