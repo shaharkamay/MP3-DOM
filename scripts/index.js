@@ -46,8 +46,7 @@ function createPlaylistElement({ id, name, songs }) {
  * @param {Array} classes - the class list of the new element
  * @param {Object} attributes - the attributes for the new element
  */
-// ["span", "div", "strong", "div"]
-// [document.createElement("li"), document.createElement("li"), document.createElement("li"), document.createElement("div"), ]
+
 function createElement(tagName, children = [], classes = [], attributes = {}) {
     const element = document.createElement(tagName);
     for(let child of children) {
@@ -59,7 +58,6 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
     }
     return element;
 }
-// console.log(createElement("fff", ["a", "b"], ["c", "d"], {name: "blabla"}));
 
 // You can write more code below this line
 const sortedSongs = sortObjectsArray(player.songs, "title");
@@ -71,8 +69,6 @@ const playlistsDiv = document.getElementById('playlists');
 insertToDiv(playlistsDiv, sortedPlaylist);
 
 function insertToDiv(div, sortedArr) {
-    // const sortedSongs = sortObjectsArray(player.songs, "title");
-    // const songsDiv = document.getElementById('songs');
     const title = document.createElement('h1');
     title.innerText = div.id;
     div.append(title);
