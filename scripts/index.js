@@ -77,14 +77,12 @@ durationReflector();
 function durationReflector() {
     for(let song of player.songs) {
         const durationLi = document.getElementById('duration' + song.id);
-        const maxRedDevider = 420 / 255; //1.65
-        const maxGreenDevider = 240 / 128; //1.875
-        const currentDuration = song.duration; //292
+        const currentDuration = song.duration;
         if(currentDuration >= 420) {
-            durationLi.style.background = `rgb(255, 0, 0)`;
+            durationLi.style.background = `hsl(0, 100%, 50%)`;
         }
-        if(currentDuration > 240 && currentDuration <= 420) {
-            durationLi.style.background = `rgb(${currentDuration / maxRedDevider},${currentDuration / maxGreenDevider},0)`;
+        if(currentDuration > 120 && currentDuration <= 420) {
+            durationLi.style.background = `hsl(${(currentDuration - 120) * (120 / 300)}, 100%, 50%)`;
         }
     }
 }
