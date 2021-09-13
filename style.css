@@ -23,3 +23,7 @@ h1 {
 .songUl img {
     height: 100px;
 }
+
+.playing {
+    background-color: lightgreen;
+}

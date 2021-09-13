@@ -6,9 +6,9 @@
  */
 function playSong(songId) {
     for(let song of player.songs) {
-        document.getElementById('song' + song.id).style.backgroundColor = "lightgrey";
+        document.getElementById('song' + song.id).classList.remove('playing');
         if(song.id === songId) {
-            document.getElementById('song' + song.id).style.backgroundColor = 'lightgreen';
+            document.getElementById('song' + song.id).classList.add('playing');
         }
     }
 }
@@ -67,6 +67,26 @@ insertToDiv(songsDiv, sortedSongs);
 const sortedPlaylist = sortObjectsArray(player.playlists, "name");
 const playlistsDiv = document.getElementById('playlists');
 insertToDiv(playlistsDiv, sortedPlaylist);
+
+let songIndex = 0;
+playingNow(sortedSongs);
+
+// setI nterval(function(){ alert("Hello"); }, 3000);
+
+function playingNow(songs) {
+    playSong(songs[songIndex].id);
+    setTimeout(stopSongs, (songs[songIndex].duration * 1000));
+}
+
+function stopSongs() {  
+    for(let song of player.songs) {
+        document.getElementById('song' + song.id).classList.remove('playing');
+    }
+    songIndex++;
+    if(songIndex < sortedSongs.length) {
+        playingNow(sortedSongs);
+    }
+}
 
 function insertToDiv(div, sortedArr) {
     const title = document.createElement('h1');
