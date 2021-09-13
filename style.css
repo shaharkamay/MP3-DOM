@@ -4,26 +4,43 @@ body {
 h1 {
     text-align: center;
 }
-.songUl {
-    list-style-type: none;
+.songDiv {
+    text-align: center;
     margin: 20px auto;
-    text-align: right;    
-    max-width: 50%;
-    padding: 20px 0;
     background-color: lightgrey;
     border: 1px solid black;
     border-radius: 20px;
+    max-width: 50%;
+    display: flex;
+    justify-content: space-between;
 }
-.songUl li {
+.songProperties {
     text-align: left;
-    padding: 2px 30px;
+    display: inline-block;
+    max-width: 50%;
+    padding: 20px;
+}
+.songProperties div {
     color:grey;
     font-weight: bold;
 }
-.songUl li:last-of-type {
-    background: hsl(120, 100%, 50%);
+
+.imgDiv {
+    display: inline-block;
+    max-width: 50%;
+    padding: 20px;
 }
-.songUl img {
+.imgDiv img {
+    height: 100px;
+    margin-right: 0;
+}
+
+/* songProperties div:last-of-type {
+    display: inline;
+    position: relative;
+    /* bottom:100px; */
+/* }  */
+.songProperties img {
     height: 100px;
 }
 

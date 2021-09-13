@@ -12,6 +12,11 @@ function getSong(id) {
     return song;
 }
 
+function getSongIndex(id) {
+    const songIndex = player.songs.findIndex(x => x.id === id);
+    return songIndex;
+}
+
 function getPlaylist(id) {
     const playlist = player.playlists.find(x => x.id === id);
     return playlist;

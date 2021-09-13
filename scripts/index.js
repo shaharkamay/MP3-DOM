@@ -6,23 +6,21 @@
  */
 function playSong(songId) {
     for(let song of player.songs) {
-        document.getElementById('song' + song.id).classList.remove('playing');
-        if(song.id === songId) {
-            document.getElementById('song' + song.id).classList.add('playing');
-        }
+        const songEl = document.getElementById('song' + song.id);
+        songEl.classList.remove('playing');
+        if(song.id === songId) songEl.classList.add('playing');
     }
-    songIndex = sortedSongs.findIndex(x => x.id === songId);
+    songIndex = getSongIndex(songId);
 }
 
 /**
  * Creates a song DOM element based on a song object.
  */
-function createSongElement({ id, title, album, artist, duration, coverArt }) {
-    const song = arguments[0];
-    const children = buildSongList(song);
-    const classes = ["songUl"];
-    const attrs = { onclick: `playSong(${id})`, id: "song" + id  }
-    return createElement("ul", children, classes, attrs)
+function createSongElement(song) {
+    const children = buildSongPropertiesList(song);
+    const classes = ["songProperties"];
+    const attrs = { id: 'songProperties' + song.id  }
+    return createElement("div", children, classes, attrs)
 }
 
 /**
@@ -30,9 +28,9 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
  */
 function createPlaylistElement({ id, name, songs }) {
     const children = buildPlaylistList({id, name, songs: songs.length, duration: toMinutes(playlistDuration(id))});
-    const classes = ["songUl"];
+    const classes = [];
     const attrs = {id: "playlist" + id};
-    return createElement("ul", children, classes, attrs)
+    return createElement("div", children, classes, attrs)
 }
 
 /**
@@ -63,6 +61,7 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 // You can write more code below this line
 const sortedSongs = sortObjectsArray(player.songs, "title");
 const songsDiv = document.getElementById('songs');
+
 insertToDiv(songsDiv, sortedSongs);
 
 const sortedPlaylist = sortObjectsArray(player.playlists, "name");
@@ -78,6 +77,9 @@ function durationReflector() {
     for(let song of player.songs) {
         const durationLi = document.getElementById('duration' + song.id);
         const currentDuration = song.duration;
+        if(currentDuration <= 120) {
+            durationLi.style.background = `hsl(120, 100%, 50%)`;
+        }
         if(currentDuration >= 420) {
             durationLi.style.background = `hsl(0, 100%, 50%)`;
         }
@@ -94,7 +96,7 @@ function playingNow(songs) {
 
 function stopSongs() {  
     for(let song of player.songs) {
-        document.getElementById('song' + song.id).classList.remove('playing');
+        document.getElementById('songProperties' + song.id).classList.remove('playing');
     }
     songIndex++;
     if(songIndex < sortedSongs.length) {
@@ -106,11 +108,17 @@ function insertToDiv(div, sortedArr) {
     const title = document.createElement('h1');
     title.innerText = div.id;
     div.append(title);
+
     for(let obj of sortedArr) {
         const tempObj = {...obj};
         if(obj.hasOwnProperty('duration')) {
+            const songDiv = createElement('div', [], ["songDiv"], {onclick: `playSong(${tempObj.id})`, id: `song${tempObj.id}`});
             tempObj.duration = toMinutes(obj.duration);
-            div.append(createSongElement(tempObj));
+            songDiv.append(createSongElement(tempObj));
+            const img = createElement('img', [], [], {src: tempObj.coverArt});
+            const imgDiv = createElement('div', [img], ["imgDiv"], {id: `imgDiv${tempObj.id}`});
+            songDiv.append(imgDiv);
+            div.append(songDiv);
         }
         else {
             div.append(createPlaylistElement(tempObj));
@@ -118,21 +126,14 @@ function insertToDiv(div, sortedArr) {
     }
 }
 
-function buildSongList(song) {
+
+function buildSongPropertiesList(song) {
     const list = [];
     for(let key in song) {
-        if(key !== "id") {
-            if(key !== "coverArt") {
-                const li = document.createElement('li');
-                li.innerText = `${key}: ${song[key]}`;
-                li.id = key + song.id;
-                list.push(li);
-            } else {
-                const img = document.createElement('img');
-                img.src = song[key];
-                list.push(img);
-            }
-            
+        if(key !== 'id' && key !== 'coverArt') {
+           let div = createElement('div', [], [], {id: key + song.id});
+            div.innerText = song[key]; 
+            list.push(div);            
         }
     }
     return list;
