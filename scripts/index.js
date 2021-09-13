@@ -29,7 +29,7 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
  * Creates a playlist DOM element based on a playlist object.
  */
 function createPlaylistElement({ id, name, songs }) {
-    const children = buildPlaylistList({name, songs: songs.length, duration: toMinutes(playlistDuration(id))});
+    const children = buildPlaylistList({id, name, songs: songs.length, duration: toMinutes(playlistDuration(id))});
     const classes = ["songUl"];
     const attrs = {id: "playlist" + id};
     return createElement("ul", children, classes, attrs)
@@ -72,7 +72,22 @@ insertToDiv(playlistsDiv, sortedPlaylist);
 let songIndex = 0;
 playingNow(sortedSongs);
 
-// setI nterval(function(){ alert("Hello"); }, 3000);
+durationReflector();
+
+function durationReflector() {
+    for(let song of player.songs) {
+        const durationLi = document.getElementById('duration' + song.id);
+        const maxRedDevider = 420 / 255; //1.65
+        const maxGreenDevider = 240 / 128; //1.875
+        const currentDuration = song.duration; //292
+        if(currentDuration >= 420) {
+            durationLi.style.background = `rgb(255, 0, 0)`;
+        }
+        if(currentDuration > 240 && currentDuration <= 420) {
+            durationLi.style.background = `rgb(${currentDuration / maxRedDevider},${currentDuration / maxGreenDevider},0)`;
+        }
+    }
+}
 
 function playingNow(songs) {
     playSong(songs[songIndex].id);
@@ -112,6 +127,7 @@ function buildSongList(song) {
             if(key !== "coverArt") {
                 const li = document.createElement('li');
                 li.innerText = `${key}: ${song[key]}`;
+                li.id = key + song.id;
                 list.push(li);
             } else {
                 const img = document.createElement('img');
@@ -127,9 +143,12 @@ function buildSongList(song) {
 function buildPlaylistList(playlist) {
     const list = [];
     for(let key in playlist) {
-        const li = document.createElement('li');
-        li.innerText = `${key}: ${playlist[key]}`;
-        list.push(li);
+        if(key !== "id") {
+            const li = document.createElement('li');
+            li.innerText = `${key}: ${playlist[key]}`;
+            li.id = key + playlist.id;
+            list.push(li);
+        }
     }
     return list;
 }

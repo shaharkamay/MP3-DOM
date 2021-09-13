@@ -20,6 +20,9 @@ h1 {
     color:grey;
     font-weight: bold;
 }
+.songUl li:last-of-type {
+    background: rgb(0, 128, 0);
+}
 .songUl img {
     height: 100px;
 }
