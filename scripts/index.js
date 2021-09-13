@@ -11,6 +11,7 @@ function playSong(songId) {
             document.getElementById('song' + song.id).classList.add('playing');
         }
     }
+    songIndex = sortedSongs.findIndex(x => x.id === songId);
 }
 
 /**
