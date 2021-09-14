@@ -37,7 +37,7 @@ function createSongElement(song) {
  */
 function createPlaylistElement({ id, name, songs }) {
     const children = buildPlaylistList({id, name, songs: songs.length, duration: toMinutes(playlistDuration(id))});
-    const classes = [];
+    const classes = ["playlistDiv"];
     const attrs = {id: "playlist" + id};
     return createElement("div", children, classes, attrs)
 }
@@ -175,10 +175,10 @@ function buildPlaylistList(playlist) {
     const list = [];
     for(let key in playlist) {
         if(key !== "id") {
-            const li = document.createElement('li');
-            li.innerText = `${key}: ${playlist[key]}`;
-            li.id = key + playlist.id;
-            list.push(li);
+            const div = document.createElement('div');
+            div.innerText = `${key}: ${playlist[key]}`;
+            div.id = key + playlist.id;
+            list.push(div);
         }
     }
     return list;
