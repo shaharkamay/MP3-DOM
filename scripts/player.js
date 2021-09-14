@@ -12,8 +12,8 @@ function getSong(id) {
     return song;
 }
 
-function getSongIndex(id) {
-    const songIndex = player.songs.findIndex(x => x.id === id);
+function getSongIndex(songs, id) {
+    const songIndex = songs.findIndex(x => x.id === id);
     return songIndex;
 }
 
@@ -79,7 +79,7 @@ const player = {
             title: "All is One",
             album: "All is One",
             artist: "Orphaned Land",
-            duration: 270,
+            duration: 5,
             coverArt: "./images/cover_art/orphaned_land_all_is_one.jpg",
         },
         {
@@ -87,7 +87,7 @@ const player = {
             title: "As a Stone",
             album: "Show Us What You Got",
             artist: "Full Trunk",
-            duration: 259,
+            duration: 9,
             coverArt: "./images/cover_art/full_trunk_as_a_stone.jpg",
         },
         {

@@ -1,3 +1,4 @@
+
 /**
  * Plays a song from the player.
  * Playing a song means changing the visual indication of the currently playing song.
@@ -5,12 +6,20 @@
  * @param {String} songId - the ID of the song to play
  */
 function playSong(songId) {
-    for(let song of player.songs) {
+    globalSongId = songId;
+    for(let song of sortedSongs) {
         const songEl = document.getElementById('song' + song.id);
         songEl.classList.remove('playing');
-        if(song.id === songId) songEl.classList.add('playing');
+        document.getElementById(`duration${song.id}`).style.removeProperty('width');
+        // eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+        if(song.id === songId) {
+            songEl.classList.add('playing');
+        }
     }
-    songIndex = getSongIndex(songId);
+    durationFiller = 0;
+    clearInterval(fillerInterval);
+    fillerInterval = setInterval(durationFillerInterval, (getSong(songId).duration / 100) * 100);
+    songIndex = getSongIndex(sortedSongs, songId);
 }
 
 /**
@@ -59,7 +68,16 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 }
 
 // You can write more code below this line
+
+/*
+Global variables:
+*/
+let songIndex = 0;
+let durationFiller = 0;
+let globalSongId = null;
+let fillerInterval;
 const sortedSongs = sortObjectsArray(player.songs, "title");
+
 const songsDiv = document.getElementById('songs');
 
 insertToDiv(songsDiv, sortedSongs);
@@ -68,8 +86,8 @@ const sortedPlaylist = sortObjectsArray(player.playlists, "name");
 const playlistsDiv = document.getElementById('playlists');
 insertToDiv(playlistsDiv, sortedPlaylist);
 
-let songIndex = 0;
-playingNow(sortedSongs);
+
+playContinously(sortedSongs[songIndex].id);
 
 durationReflector();
 
@@ -84,23 +102,37 @@ function durationReflector() {
             durationLi.style.background = `hsl(0, 100%, 50%)`;
         }
         if(currentDuration > 120 && currentDuration <= 420) {
-            durationLi.style.background = `hsl(${(currentDuration - 120) * (120 / 300)}, 100%, 50%)`;
+            durationLi.style.background = `hsl(${(420 - currentDuration) * (120 / 420)}, 100%, 50%)`;
         }
     }
 }
 
-function playingNow(songs) {
-    playSong(songs[songIndex].id);
-    setTimeout(stopSongs, (songs[songIndex].duration * 1000));
+
+function durationFillerInterval() {
+    const durationDiv = document.getElementById(`duration${globalSongId}`);
+    durationFiller += 0.1;
+    if(durationFiller < 100){
+        durationDiv.style.transition = 'all 0.1s';
+        durationDiv.style.width = `${durationFiller}%`;
+    } else {
+        durationFiller = 0;
+        durationDiv.style.removeProperty('width');
+        clearInterval(fillerInterval);
+    }
+}
+
+function playContinously(songId) {
+    playSong(songId);
+    setTimeout(stopSongs, (getSong(songId).duration * 1000));
 }
 
 function stopSongs() {  
-    for(let song of player.songs) {
+    for(let song of sortedSongs) {
         document.getElementById('songProperties' + song.id).classList.remove('playing');
     }
     songIndex++;
     if(songIndex < sortedSongs.length) {
-        playingNow(sortedSongs);
+        playContinously(sortedSongs[songIndex].id);
     }
 }
 
@@ -112,7 +144,7 @@ function insertToDiv(div, sortedArr) {
     for(let obj of sortedArr) {
         const tempObj = {...obj};
         if(obj.hasOwnProperty('duration')) {
-            const songDiv = createElement('div', [], ["songDiv"], {onclick: `playSong(${tempObj.id})`, id: `song${tempObj.id}`});
+            const songDiv = createElement('div', [], ["songDiv"], {onclick: `playContinously(${tempObj.id})`, id: `song${tempObj.id}`});
             tempObj.duration = toMinutes(obj.duration);
             songDiv.append(createSongElement(tempObj));
             const img = createElement('img', [], [], {src: tempObj.coverArt});
