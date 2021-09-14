@@ -63,7 +63,7 @@ const player = {
             title: "Shiroyama",
             album: "The Last Stand",
             artist: "Sabaton",
-            duration: 213,
+            duration: 14,
             coverArt: "./images/cover_art/sabaton_shiroyama.jpg",
         },
         {
@@ -95,7 +95,7 @@ const player = {
             title: "Sons of Winter and Stars",
             album: "Time I",
             artist: "Wintersun",
-            duration: 811,
+            duration: 21,
             coverArt: "./images/cover_art/wintersun_sons_of_winter_and_stars.jpg",
         },
     ],

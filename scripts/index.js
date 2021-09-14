@@ -6,20 +6,12 @@
  * @param {String} songId - the ID of the song to play
  */
 function playSong(songId) {
+    resetSongs();
     globalSongId = songId;
-    for(let song of sortedSongs) {
-        const songEl = document.getElementById('song' + song.id);
-        songEl.classList.remove('playing');
-        document.getElementById(`duration${song.id}`).style.removeProperty('width');
-        // eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-        if(song.id === songId) {
-            songEl.classList.add('playing');
-        }
-    }
-    durationFiller = 0;
-    clearInterval(fillerInterval);
-    fillerInterval = setInterval(durationFillerInterval, (getSong(songId).duration / 100) * 100);
-    songIndex = getSongIndex(sortedSongs, songId);
+    const songEl = document.getElementById('song' + songId);
+    songEl.classList.add('playing');
+    globalSongIndex = getSongIndex(sortedSongs, songId);
+    globalFillerInterval = setInterval(durationFillerInterval, (getSong(songId).duration / 100) * 1000);
 }
 
 /**
@@ -72,10 +64,12 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 /*
 Global variables:
 */
-let songIndex = 0;
-let durationFiller = 0;
+let globalSongIndex = 0;
+let globalDurationFiller = 0;
 let globalSongId = null;
-let fillerInterval;
+let globalFillerInterval = null;
+let globalResetSongsTimeout = null;
+
 const sortedSongs = sortObjectsArray(player.songs, "title");
 
 const songsDiv = document.getElementById('songs');
@@ -87,7 +81,7 @@ const playlistsDiv = document.getElementById('playlists');
 insertToDiv(playlistsDiv, sortedPlaylist);
 
 
-playContinously(sortedSongs[songIndex].id);
+playContinously(sortedSongs[globalSongIndex].id);
 
 durationReflector();
 
@@ -102,7 +96,7 @@ function durationReflector() {
             durationLi.style.background = `hsl(0, 100%, 50%)`;
         }
         if(currentDuration > 120 && currentDuration <= 420) {
-            durationLi.style.background = `hsl(${(420 - currentDuration) * (120 / 420)}, 100%, 50%)`;
+            durationLi.style.background = `hsl(${(420 - currentDuration) * (120 / 300)}, 100%, 50%)`;
         }
     }
 }
@@ -110,29 +104,41 @@ function durationReflector() {
 
 function durationFillerInterval() {
     const durationDiv = document.getElementById(`duration${globalSongId}`);
-    durationFiller += 0.1;
-    if(durationFiller < 100){
+    globalDurationFiller++;
+    if(globalDurationFiller < 100){
         durationDiv.style.transition = 'all 0.1s';
-        durationDiv.style.width = `${durationFiller}%`;
+        durationDiv.style.width = `${globalDurationFiller}%`;
     } else {
-        durationFiller = 0;
+        globalDurationFiller = 0;
         durationDiv.style.removeProperty('width');
-        clearInterval(fillerInterval);
+        clearInterval(globalFillerInterval);
     }
+}
+
+function resetSongs() {
+    for(let song of sortedSongs) {
+        const songEl = document.getElementById('song' + song.id);
+        songEl.classList.remove('playing');
+
+        const durationEl = document.getElementById(`duration${song.id}`);
+        durationEl.style.removeProperty('width');
+
+    }
+    clearInterval(globalFillerInterval);
+    clearTimeout(globalResetSongsTimeout);
+    globalDurationFiller = 0;
+    globalSongId = null;
 }
 
 function playContinously(songId) {
     playSong(songId);
-    setTimeout(stopSongs, (getSong(songId).duration * 1000));
+    globalSongIndex++;
+    globalResetSongsTimeout = setTimeout(stopSong, (getSong(songId).duration * 1000));
 }
 
-function stopSongs() {  
-    for(let song of sortedSongs) {
-        document.getElementById('songProperties' + song.id).classList.remove('playing');
-    }
-    songIndex++;
-    if(songIndex < sortedSongs.length) {
-        playContinously(sortedSongs[songIndex].id);
+function stopSong() {  
+    if(globalSongIndex < sortedSongs.length) {
+        playContinously(sortedSongs[globalSongIndex].id);
     }
 }
 
