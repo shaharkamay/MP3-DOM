@@ -75,7 +75,9 @@ function removeSongFromPlayer(id) {
 function removeSongFromPlaylists(id) {
     for(let playlist of player.playlists) {
         const songIndex = playlist.songs.indexOf(id);
-        playlist.songs.splice(songIndex, 1);
+        if(songIndex !== -1) {
+            playlist.songs.splice(songIndex, 1);
+        }
     }
 }
 

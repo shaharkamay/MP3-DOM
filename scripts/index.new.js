@@ -119,25 +119,24 @@ function setSongProperties(song, songId) {
  * Creates a playlist DOM element based on a playlist object.
  */
 function createPlaylistElement({ id, name, songs }) {
-    const children = []
-    const classes = []
-    const attrs = {}
+    const children = setPlaylistProperties({id, name, songs});
+    const classes = ['playlistDiv'];
+    const attrs = {id: `playlist${id}`};
     const eventListeners = {}
     return createElement("div", children, classes, attrs, eventListeners)
 }
-// function setPlaylistProperties(song, songId) {
-//     const properties = [];
-//     for(let key in song) {
-//         const div = createElement('div', [], [], {id: `${key}${songId}`}, {});
-//         div.textContent = song[key];
-//         if(key === 'duration') {
-//             div.textContent = toMinutes(song[key]);
-//             durationReflector(div, song[key]);
-//         }
-//         properties.push(div);
-//     }
-//     return properties;
-// }
+function setPlaylistProperties(playlist) {
+    const properties = [];
+    for(let key in playlist) {
+        const div = createElement('div', [], [], {id: `${key}${playlist.id}`}, {});
+        div.textContent = `${key}: ${playlist[key]}`;
+        if(key === 'songs') {
+            div.textContent = `${key}: ${playlist[key].length}`;
+        }
+        properties.push(div);
+    }
+    return properties;
+}
 
 /**
  * Creates a new DOM element.
@@ -186,7 +185,10 @@ function addSongElementInOrder(songElem, songIndex) {
  * Inserts all playlists in the player as DOM elements into the playlists list.
  */
 function generatePlaylists() {
-    
+    const playlistsDiv = document.getElementById('playlists');
+    for(let playlist of playlists) {
+        playlistsDiv.append(createPlaylistElement(playlist));
+    }
 }
 
 //Global variables
@@ -238,11 +240,18 @@ Edit song event handler (delete)
 */
 function handleEditSongEvent(event) {
     if(event.target.id.includes('delete')) {
+        //delete song from songs object and playlist object
         const songId = Number(event.target.id.replace('delete', ''));
         const songIndex = getSongIndex(songs, songId);
         removeSong(songId);
         songs = sortObjectsArray(player.songs, 'title');
+        playlists = sortObjectsArray(player.playlists, 'name');
+
+        //update the DOM (songsDiv)
         document.getElementById(`song${songId}`).remove();
+
+        //update the DOM (playlistsDiv)
+        updatePlaylistsDiv();
     }
 }
 
@@ -303,3 +312,14 @@ function changeTextContent(elemId, text) {
     elem.textContent = text;
 }
 
+
+//update the DOM (playlistsDiv)
+function updatePlaylistsDiv() {
+    const playlistsDiv = document.getElementById('playlists');
+    for(const playlistDiv of playlistsDiv.children) {
+            if(playlistDiv.tagName === 'DIV') {
+            const playlistId = Number(playlistDiv.id.replace('playlist', ''));
+            playlistDiv.lastElementChild.textContent = `songs: ${getPlaylist(playlistId).songs.length}`;
+        }
+    }
+}
