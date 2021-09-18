@@ -10,6 +10,7 @@ function playSong(songId) {
     const songEl = document.getElementById('song' + songId);
     songEl.classList.add('playing');
     globalSongIndex = getSongIndex(sortedSongs, songId);
+    // changeTextIcon(`playPause${songId}`, '⏸');
     durationFiller(songId);
 }
 
@@ -32,6 +33,7 @@ function createPlaylistElement({ id, name, songs }) {
     const attrs = {id: "playlist" + id};
     return createElement("div", children, classes, attrs)
 }
+
 
 /**
  * Creates a new DOM element.
@@ -87,6 +89,13 @@ setTimeout(() => {
 
 durationReflector();
 
+
+
+function changeTextIcon(elemId, text) {
+    const elem = document.getElementById(elemId);
+    elem.textContent = text;
+}
+
 function durationReflector() {
     for(let song of player.songs) {
         const durationLi = document.getElementById('duration' + song.id);
@@ -118,6 +127,8 @@ function resetSongs() {
         const durationEl = document.getElementById(`duration${song.id}`);
         durationEl.style.removeProperty('width');
         durationEl.style.removeProperty('transition');
+
+        // changeTextIcon(`playPause${song.id}`, '⏵');
     }
     clearTimeout(globalResetSongsTimeout);
 }
