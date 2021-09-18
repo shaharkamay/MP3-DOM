@@ -2,17 +2,87 @@ body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: lightgreen;
 }
+h1 {
+    text-align: center;
+    color:white;
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+}
 h2 {
     text-align: center;
     color:white;
     text-shadow: 5px 5px 5px rgba(0,0,0,0.3);
 }
+
+#add-button {
+    border: 1px solid white;
+    color: lightgreen;
+    font-weight: 600;
+    border-radius: none;
+    background: white;
+    padding: 5px;
+    margin: 3px 0;
+    width: 30%;
+}
+#add-button:hover {
+    transition: all 0.3s;
+    color: white;
+    border: 1px solid white;
+    background: lightgreen;
+    cursor: pointer;
+}
+
+.addButton {
+    border: 1px solid lightgreen;
+    color: white;
+    border-radius: none;
+    background: lightgreen;
+    padding: 5px;
+    margin: 3px 0;
+    width: 50%;
+}
+.addButton:hover {
+    transition: all 0.2s;
+    color: lightgreen;
+    border: 1px solid lightgreen;
+    background: white;
+    cursor: pointer;
+}
+
+#add-section {
+    text-align: center;
+    margin: 0 auto;
+    width: 50%;
+}
+.addSong {
+    display: none;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+    width: 100%;
+    background: white;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.2);
+}
+.addSong:hover {
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.6);
+    transition: box-shadow 0.3s;
+}
+
+.addSong input {
+    margin: 3px 0;
+    width: 50%;
+    border-radius: none;
+    height: 30px;
+}
+.addSong input:focus {
+    outline-color:lightgreen;
+}
+
 .songDiv {
     text-align: center;
     margin: 20px auto;
     background-color: white;
     max-width: 40%;
-    max-height: 100px;
+    height: 100px;
     display: flex;
     justify-content: space-between;
     transition: max-width 0.5s;
@@ -56,9 +126,10 @@ h2 {
 
 .imgDiv {
     display: inline-block;
+    margin: auto 0;
 }
 .imgDiv img {
-    height: 100px;
+    max-width: 100px;
 }
 
 .mediaControl {

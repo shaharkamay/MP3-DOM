@@ -28,6 +28,10 @@ function toMinutes(sec) {
     minFormat[0] = sec / 60 < 10 ? "0" + Math.floor(sec / 60): Math.floor(sec / 60);
     return minFormat.join(':');
 }
+function toSeconds(duration) {
+    const arr = duration.split(':');
+    return parseInt(arr[0]) * 60 + parseInt(arr[1]);
+  }
 
 function sumDuration(arr) {
     if(arr.length === 0) return 0;
@@ -40,6 +44,51 @@ function playlistDuration(id) {
     return sumDuration(secondsArr);
 }
 
+function addSong(title, album, artist, duration, coverArt, id) {
+    if(id === undefined) {
+        id = getMaxId(player.songs) + 1; //generates auto id (max id + 1)
+    } else {
+        if(isIdExist(player.songs, id)) existError();
+    }
+    duration = toSeconds(duration);
+    player.songs.push({id, title, album, artist, duration, coverArt});
+    return id;
+}
+
+function getMaxId(arr) {
+    let max = 0;
+    for (let obj of arr) {
+        if(obj.id > max) max = obj.id;
+    }
+    return max;
+}
+
+function removeSong(id) {
+    if(!isIdExist(player.songs, id)) notExistError();
+    removeSongFromPlayer(id);
+    removeSongFromPlaylists(id);
+}
+function removeSongFromPlayer(id) {
+    const songIndex = player.songs.indexOf(getSong(id));
+    player.songs.splice(songIndex, 1);
+}
+function removeSongFromPlaylists(id) {
+    for(let playlist of player.playlists) {
+        const songIndex = playlist.songs.indexOf(id);
+        playlist.songs.splice(songIndex, 1);
+    }
+}
+
+function existError() {
+    throw 'this id already exist!';
+}
+function notExistError() {
+    throw 'this id does not exist!';
+}
+function isIdExist(arr, id) {
+    return arr.find(x => x.id === id) !== undefined;
+}
+
 const player = {
     songs: [
         {
@@ -47,7 +96,7 @@ const player = {
             title: "Vortex",
             album: "Wallflowers",
             artist: "Jinjer",
-            duration: 3,
+            duration: 242,
             coverArt: "./images/cover_art/jinjer_vortex.jpg",
         },
         {
@@ -55,7 +104,7 @@ const player = {
             title: "Vinda",
             album: "Godtfolk",
             artist: "Songleikr",
-            duration: 8,
+            duration: 160,
             coverArt: "./images/cover_art/songleikr_vinda.jpg",
         },
         {
@@ -71,7 +120,7 @@ const player = {
             title: "Thunderstruck",
             album: "The Razors Edge",
             artist: "AC/DC",
-            duration: 6,
+            duration: 292,
             coverArt: "./images/cover_art/acdc_thunderstruck.jpg",
         },
         {
@@ -79,7 +128,7 @@ const player = {
             title: "All is One",
             album: "All is One",
             artist: "Orphaned Land",
-            duration: 5,
+            duration: 50,
             coverArt: "./images/cover_art/orphaned_land_all_is_one.jpg",
         },
         {

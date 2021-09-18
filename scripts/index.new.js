@@ -18,16 +18,16 @@ function playSong(songId) {
  *
  * @param {Number} songId - the ID of the song to remove
  */
-function removeSong(songId) {
-    // Your code here
-}
+// function removeSong(songId) {
+//     // Your code here
+// }
 
 /**
  * Adds a song to the player, and updates the DOM to match.
  */
-function addSong({ title, album, artist, duration, coverArt }) {
-    // Your code here
-}
+// function addSong({ title, album, artist, duration, coverArt }) {
+//     // Your code here
+// }
 
 /**
  * Acts on a click event on an element inside the songs list.
@@ -36,7 +36,11 @@ function addSong({ title, album, artist, duration, coverArt }) {
  * @param {MouseEvent} event - the click event
  */
 function handleSongClickEvent(event) {
-    // Your code here
+    if(event.target.parentElement.className.includes('mediaControl')) {
+        handleMediaControlEvent(event);
+    } else if(event.target.parentElement.className.includes('editSong')) {
+        handleEditSongEvent(event);
+    }
 }
 
 /**
@@ -45,39 +49,40 @@ function handleSongClickEvent(event) {
  * @param {MouseEvent} event - the click event
  */
 function handleAddSongEvent(event) {
-    // Your code here
+    const inputs = event.target.parentElement.children;
+    const values = [];
+    for(const elem of inputs) {
+        if(elem.tagName === 'INPUT') values.push(elem.value);
+    }
+    const [title, album, artist, duration, coverArt] = values;
+    const newSongId = addSong(title, album, artist, duration, coverArt);
+    songs = sortObjectsArray(player.songs, 'title');
+    const songIndex = getSongIndex(songs, newSongId);
+    addSongElementInOrder(createSongElement(songs[songIndex]), songIndex);
 }
 
 /**
  * Creates a song DOM element based on a song object.
  */
 function createSongElement({ id, title, album, artist, duration, coverArt }) {
-    //insert image
+    //insert image to imgDiv
     const img = createElement('img', [], [], {src: coverArt}, {});
     const imgDiv = createElement('div', [img], ['imgDiv'], {id: `imgDiv${id}`}, {});
 
-    //insert song properties
-    const titleDiv = createElement('div', [], [], {id: `title${id}`}, {});
-    titleDiv.textContent = title;
-    const albumDiv = createElement('div', [], [], {id: `album${id}`}, {});
-    albumDiv.textContent = album;
-    const artistDiv = createElement('div', [], [], {id: `artist${id}`}, {});
-    artistDiv.textContent = artist;
-    const durationDiv = createElement('div', [], [], {id: `duration${id}`}, {});
-    durationDiv.textContent = toMinutes(duration);
-    durationReflector(durationDiv, duration);   //sets the color of the duration
-    const songPropertiesDiv = createElement('div', [titleDiv, albumDiv, artistDiv, durationDiv], ['songProperties'], {id: `songProperties${id}`}, {});
+    //insert song properties to songPropertiesDiv
+    const properties = setSongProperties({ title, album, artist, duration }, id);
+    const songPropertiesDiv = createElement('div', properties, ['songProperties'], {id: `songProperties${id}`}, {});
 
-    //insert media control buttons
-    const previousButton = createElement('button', [], [], {id: `previous${id}`, onclick: `playPreviousSong(${id})`}, {click: mediaControlEvent});
+    //insert media control buttons to mediaControlDiv
+    const previousButton = createElement('button', [], [], {id: `previous${id}`}, {});
     previousButton.textContent = '⏮';
-    const playPauseButton = createElement('button', [], [], {id: `playPause${id}`, onclick: `playSong(${id})`}, {click: mediaControlEvent});
+    const playPauseButton = createElement('button', [], [], {id: `playPause${id}`}, {});
     playPauseButton.textContent = '⏵';
-    const nextButton = createElement('button', [], [], {id: `next${id}`, onclick: `playNextSong(${id})`}, {click: mediaControlEvent});
+    const nextButton = createElement('button', [], [], {id: `next${id}`}, {});
     nextButton.textContent = '⏭';
     const mediaControlDiv = createElement('div', [previousButton, playPauseButton, nextButton], ['mediaControl'], {id: `mediaControl${id}`}, {});
 
-    //insert edit buttons
+    //insert edit buttons to editSongDiv
     const deleteButton = createElement('button', [], ['defaultButton'], {id: `delete${id}`, title:'Delete'}, {});
     deleteButton.textContent = 'X';
     const editButton = createElement('button', [], ['defaultButton'], {id: `edit${id}`, title:'Edit'}, {});
@@ -91,9 +96,23 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
     const children = [imgDiv, songPropertiesDiv, mediaControlDiv, seperetorDiv, editSongDiv];
     const classes = ['songDiv'];
     const attrs = { id: `song${id}` };
-    const eventListeners = {};
+    const eventListeners = {click: handleSongClickEvent};
 
     return createElement("div", children, classes, attrs, eventListeners);
+}
+//this function creates the songPropertiesDiv children
+function setSongProperties(song, songId) {
+    const properties = [];
+    for(let key in song) {
+        const div = createElement('div', [], [], {id: `${key}${songId}`}, {});
+        div.textContent = song[key];
+        if(key === 'duration') {
+            div.textContent = toMinutes(song[key]);
+            durationReflector(div, song[key]);
+        }
+        properties.push(div);
+    }
+    return properties;
 }
 
 /**
@@ -106,6 +125,19 @@ function createPlaylistElement({ id, name, songs }) {
     const eventListeners = {}
     return createElement("div", children, classes, attrs, eventListeners)
 }
+// function setPlaylistProperties(song, songId) {
+//     const properties = [];
+//     for(let key in song) {
+//         const div = createElement('div', [], [], {id: `${key}${songId}`}, {});
+//         div.textContent = song[key];
+//         if(key === 'duration') {
+//             div.textContent = toMinutes(song[key]);
+//             durationReflector(div, song[key]);
+//         }
+//         properties.push(div);
+//     }
+//     return properties;
+// }
 
 /**
  * Creates a new DOM element.
@@ -145,25 +177,32 @@ function generateSongs() {
     }
 }
 
+function addSongElementInOrder(songElem, songIndex) {
+    const songsDiv = document.getElementById('songs');
+    songsDiv.children[2].after(songElem);
+}
+
 /**
  * Inserts all playlists in the player as DOM elements into the playlists list.
  */
 function generatePlaylists() {
-    // Your code here
+    
 }
 
 //Global variables
-const songs = sortObjectsArray(player.songs, "title");
+let songs = sortObjectsArray(player.songs, 'title');
+let playlists = sortObjectsArray(player.playlists, 'name');
 let globalResetSongsTimeout = null;
 
 
 // Creating the page structure
 generateSongs();
 generatePlaylists();
-
+const addSection = document.getElementById('add-button');
+addSection.addEventListener('click', () => document.getElementById('inputs').style.display = "block");
 
 // Making the add-song-button actually do something
-document.getElementById("add-button").addEventListener("click", handleAddSongEvent)
+document.getElementById("addSong").addEventListener("click", handleAddSongEvent)
 
 
 
@@ -172,9 +211,18 @@ document.getElementById("add-button").addEventListener("click", handleAddSongEve
 Media Control functions
 */
 //Media control event handler
-function mediaControlEvent(event) {
-    // console.log(event.path[0].id);
-    // console.log(event);
+function handleMediaControlEvent(event) {
+    if(event.target.id.includes('playPause')) {
+        const songId = Number(event.target.id.replace('playPause', ''));
+        console.log(songId);
+        playSong(songId);
+    } else if(event.target.id.includes('next')) {
+        const songId = Number(event.target.id.replace('next', ''));
+        playNextSong(songId);
+    } else if(event.target.id.includes('previous')) {
+        const songId = Number(event.target.id.replace('previous', ''));
+        playPreviousSong(songId);
+    }
 }
 function playNextSong(songId) { 
     const nextSongIndex = getSongIndex(songs, songId) + 1;
@@ -183,6 +231,19 @@ function playNextSong(songId) {
 function playPreviousSong(songId) {
     const previousSongIndex = getSongIndex(songs, songId) - 1;
     playSong(previousSongIndex !== - 1 ? songs[previousSongIndex].id : songs[songs.length - 1].id);
+}
+
+/*
+Edit song event handler (delete)
+*/
+function handleEditSongEvent(event) {
+    if(event.target.id.includes('delete')) {
+        const songId = Number(event.target.id.replace('delete', ''));
+        const songIndex = getSongIndex(songs, songId);
+        removeSong(songId);
+        songs = sortObjectsArray(player.songs, 'title');
+        document.getElementById(`song${songId}`).remove();
+    }
 }
 
 /*
