@@ -8,7 +8,10 @@ function playSong(songId) {
     resetSongs();
     const songElem = document.getElementById('song' + songId);
     songElem.classList.add('playing');
-    playContinously(songId);
+    globalSongIndex = getSongIndex(songs, songId);
+    durationBarFiller(songId);
+    changeTextContent(`playPause${songId}`, '⏸');
+    playContinuously(songId);
 }
 
 /**
@@ -67,11 +70,11 @@ function createSongElement({ id, title, album, artist, duration, coverArt }) {
     const songPropertiesDiv = createElement('div', [titleDiv, albumDiv, artistDiv, durationDiv], ['songProperties'], {id: `songProperties${id}`}, {});
 
     //insert media control buttons
-    const previousButton = createElement('button', [], [], {id: `previous${id}`}, {click: mediaControlEvent});
+    const previousButton = createElement('button', [], [], {id: `previous${id}`, onclick: `playPreviousSong(${id})`}, {click: mediaControlEvent});
     previousButton.textContent = '⏮';
     const playPauseButton = createElement('button', [], [], {id: `playPause${id}`, onclick: `playSong(${id})`}, {click: mediaControlEvent});
     playPauseButton.textContent = '⏵';
-    const nextButton = createElement('button', [], [], {id: `next${id}`}, {click: mediaControlEvent});
+    const nextButton = createElement('button', [], [], {id: `next${id}`, onclick: `playNextSong(${id})`}, {click: mediaControlEvent});
     nextButton.textContent = '⏭';
     const mediaControlDiv = createElement('div', [previousButton, playPauseButton, nextButton], ['mediaControl'], {id: `mediaControl${id}`}, {});
 
@@ -152,6 +155,9 @@ function generatePlaylists() {
 
 //Global variables
 const songs = sortObjectsArray(player.songs, "title");
+let globalSongIndex = 0;
+let globalResetSongsTimeout = null;
+
 
 // Creating the page structure
 generateSongs();
@@ -171,23 +177,34 @@ function mediaControlEvent(event) {
     // console.log(event.path[0].id);
     // console.log(event);
 }
-
+function playNextSong(songId) { 
+    if(songId) {
+        const nextSongIndex = getSongIndex(songs, songId) + 1;
+        playSong(nextSongIndex < songs.length ? songs[nextSongIndex].id : songs[0].id);
+    } else {
+        playSong(globalSongIndex < songs.length ? songs[globalSongIndex].id : songs[0].id);
+    }
+}
+function playPreviousSong(songId) {
+    const previousSongIndex = getSongIndex(songs, songId) - 1;
+    playSong(previousSongIndex !== - 1 ? songs[previousSongIndex].id : songs[songs.length - 1].id);
+}
 
 /*
-this function reset the songs view to deault mode;
+this function reset the songs view to deault mode
 */
 function resetSongs() {
     for(let song of songs) {
         const songElem = document.getElementById('song' + song.id);
         songElem.classList.remove('playing');
 
-        // const durationElem = document.getElementById(`duration${song.id}`);
-        // durationElem.style.removeProperty('width');
-        // durationElem.style.removeProperty('transition');
+        const durationElem = document.getElementById(`duration${song.id}`);
+        durationElem.style.removeProperty('width');
+        durationElem.style.removeProperty('transition');
 
-        // changeTextIcon(`playPause${song.id}`, '⏵');
+        changeTextContent(`playPause${song.id}`, '⏵');
     }
-    // clearTimeout(globalResetSongsTimeout);
+    clearTimeout(globalResetSongsTimeout);
 }
 
 
@@ -207,5 +224,27 @@ function durationReflector(elem, duration) {
 
 
 /*
-
+timeout to play songs continuously
 */
+function playContinuously(songId) {
+    globalSongIndex++;
+    globalResetSongsTimeout = setTimeout(playNextSong, (getSong(songId).duration * 1000));
+}
+
+
+/*
+this function fill the bar according to the time
+of the song
+*/
+function durationBarFiller(songId) {
+    const durationDiv = document.getElementById(`duration${songId}`);
+    const duration = getSong(songId).duration;
+    durationDiv.style.transition = `width ${duration}s linear`;
+    durationDiv.style.width = `100%`;
+}
+
+function changeTextContent(elemId, text) {
+    const elem = document.getElementById(elemId);
+    elem.textContent = text;
+}
+
