@@ -7,11 +7,10 @@
  */
 function playSong(songId) {
     resetSongs();
-    globalSongId = songId;
     const songEl = document.getElementById('song' + songId);
     songEl.classList.add('playing');
     globalSongIndex = getSongIndex(sortedSongs, songId);
-    globalFillerInterval = setInterval(durationFillerInterval, (getSong(songId).duration / 100) * 1000);
+    durationFiller(songId);
 }
 
 /**
@@ -65,9 +64,6 @@ function createElement(tagName, children = [], classes = [], attributes = {}) {
 Global variables:
 */
 let globalSongIndex = 0;
-let globalDurationFiller = 0;
-let globalSongId = null;
-let globalFillerInterval = null;
 let globalResetSongsTimeout = null;
 
 const sortedSongs = sortObjectsArray(player.songs, "title");
@@ -81,7 +77,13 @@ const playlistsDiv = document.getElementById('playlists');
 insertToDiv(playlistsDiv, sortedPlaylist);
 
 
-playContinously(sortedSongs[globalSongIndex].id);
+/*
+play the first song after 1 second from the page load
+so the songs will load their classes first.
+*/
+setTimeout(() => {
+    playContinously(sortedSongs[globalSongIndex].id);
+}, 1000); 
 
 durationReflector();
 
@@ -90,29 +92,22 @@ function durationReflector() {
         const durationLi = document.getElementById('duration' + song.id);
         const currentDuration = song.duration;
         if(currentDuration <= 120) {
-            durationLi.style.background = `hsl(120, 100%, 50%)`;
+            durationLi.style.color = `hsl(120, 100%, 50%)`;
         }
         if(currentDuration >= 420) {
-            durationLi.style.background = `hsl(0, 100%, 50%)`;
+            durationLi.style.color = `hsl(0, 100%, 50%)`;
         }
         if(currentDuration > 120 && currentDuration <= 420) {
-            durationLi.style.background = `hsl(${(420 - currentDuration) * (120 / 300)}, 100%, 50%)`;
+            durationLi.style.color = `hsl(${(420 - currentDuration) * (120 / 300)}, 100%, 50%)`;
         }
     }
 }
 
-
-function durationFillerInterval() {
-    const durationDiv = document.getElementById(`duration${globalSongId}`);
-    globalDurationFiller++;
-    if(globalDurationFiller < 100){
-        durationDiv.style.transition = 'all 0.1s';
-        durationDiv.style.width = `${globalDurationFiller}%`;
-    } else {
-        globalDurationFiller = 0;
-        durationDiv.style.removeProperty('width');
-        clearInterval(globalFillerInterval);
-    }
+function durationFiller(songId) {
+    const durationDiv = document.getElementById(`duration${songId}`);
+    const duration = getSong(songId).duration;
+    durationDiv.style.transition = `width ${duration}s linear`;
+    durationDiv.style.width = `100%`;
 }
 
 function resetSongs() {
@@ -122,12 +117,9 @@ function resetSongs() {
 
         const durationEl = document.getElementById(`duration${song.id}`);
         durationEl.style.removeProperty('width');
-
+        durationEl.style.removeProperty('transition');
     }
-    clearInterval(globalFillerInterval);
     clearTimeout(globalResetSongsTimeout);
-    globalDurationFiller = 0;
-    globalSongId = null;
 }
 
 function playContinously(songId) {
