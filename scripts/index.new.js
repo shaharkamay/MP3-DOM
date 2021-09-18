@@ -8,7 +8,6 @@ function playSong(songId) {
     resetSongs();
     const songElem = document.getElementById('song' + songId);
     songElem.classList.add('playing');
-    globalSongIndex = getSongIndex(songs, songId);
     durationBarFiller(songId);
     changeTextContent(`playPause${songId}`, '⏸');
     playContinuously(songId);
@@ -155,7 +154,6 @@ function generatePlaylists() {
 
 //Global variables
 const songs = sortObjectsArray(player.songs, "title");
-let globalSongIndex = 0;
 let globalResetSongsTimeout = null;
 
 
@@ -171,19 +169,16 @@ document.getElementById("add-button").addEventListener("click", handleAddSongEve
 
 
 /*
-Media Control event handler
+Media Control functions
 */
+//Media control event handler
 function mediaControlEvent(event) {
     // console.log(event.path[0].id);
     // console.log(event);
 }
 function playNextSong(songId) { 
-    if(songId) {
-        const nextSongIndex = getSongIndex(songs, songId) + 1;
-        playSong(nextSongIndex < songs.length ? songs[nextSongIndex].id : songs[0].id);
-    } else {
-        playSong(globalSongIndex < songs.length ? songs[globalSongIndex].id : songs[0].id);
-    }
+    const nextSongIndex = getSongIndex(songs, songId) + 1;
+    playSong(nextSongIndex < songs.length ? songs[nextSongIndex].id : songs[0].id);
 }
 function playPreviousSong(songId) {
     const previousSongIndex = getSongIndex(songs, songId) - 1;
@@ -227,8 +222,7 @@ function durationReflector(elem, duration) {
 timeout to play songs continuously
 */
 function playContinuously(songId) {
-    globalSongIndex++;
-    globalResetSongsTimeout = setTimeout(playNextSong, (getSong(songId).duration * 1000));
+    globalResetSongsTimeout = setTimeout(() => playNextSong(songId), (getSong(songId).duration * 1000));
 }
 
 

@@ -47,7 +47,7 @@ const player = {
             title: "Vortex",
             album: "Wallflowers",
             artist: "Jinjer",
-            duration: 242,
+            duration: 3,
             coverArt: "./images/cover_art/jinjer_vortex.jpg",
         },
         {
@@ -55,7 +55,7 @@ const player = {
             title: "Vinda",
             album: "Godtfolk",
             artist: "Songleikr",
-            duration: 160,
+            duration: 8,
             coverArt: "./images/cover_art/songleikr_vinda.jpg",
         },
         {
@@ -71,7 +71,7 @@ const player = {
             title: "Thunderstruck",
             album: "The Razors Edge",
             artist: "AC/DC",
-            duration: 292,
+            duration: 6,
             coverArt: "./images/cover_art/acdc_thunderstruck.jpg",
         },
         {
