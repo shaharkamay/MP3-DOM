@@ -1,3 +1,96 @@
+function sortObjectsArray(arr, property) {
+    const sortedObjects = [];
+    for (let obj of arr) {
+        sortedObjects.push(obj);
+    }
+    sortedObjects.sort((a, b) => {if(a[property] < b[property]) return -1;});
+    return sortedObjects;
+}
+
+function getSong(id) {
+    const song = player.songs.find(x => x.id === id);
+    return song;
+}
+
+function getSongIndex(songs, id) {
+    const songIndex = songs.findIndex(x => x.id === id);
+    return songIndex;
+}
+
+function getPlaylist(id) {
+    const playlist = player.playlists.find(x => x.id === id);
+    return playlist;
+}
+
+function toMinutes(sec) {
+    const minFormat = ["mm", "ss"];
+    minFormat[1] = sec % 60 < 10 ? "0" + sec % 60: sec % 60;
+    minFormat[0] = sec / 60 < 10 ? "0" + Math.floor(sec / 60): Math.floor(sec / 60);
+    return minFormat.join(':');
+}
+function toSeconds(duration) {
+    const arr = duration.split(':');
+    return parseInt(arr[0]) * 60 + parseInt(arr[1]);
+  }
+
+function sumDuration(arr) {
+    if(arr.length === 0) return 0;
+    return getSong(arr.pop()).duration + sumDuration(arr.slice(0, arr.length));
+}
+
+function playlistDuration(id) {
+    const playlist = getPlaylist(id);
+    const secondsArr = [...playlist.songs];
+    return sumDuration(secondsArr);
+}
+
+function addSong(title, album, artist, duration, coverArt, id) {
+    if(id === undefined) {
+        id = getMaxId(player.songs) + 1; //generates auto id (max id + 1)
+    } else {
+        if(isIdExist(player.songs, id)) existError();
+    }
+    duration = toSeconds(duration);
+    player.songs.push({id, title, album, artist, duration, coverArt});
+    return id;
+}
+
+function getMaxId(arr) {
+    let max = 0;
+    for (let obj of arr) {
+        if(obj.id > max) max = obj.id;
+    }
+    return max;
+}
+
+function removeSong(id) {
+    if(!isIdExist(player.songs, id)) notExistError();
+    removeSongFromPlayer(id);
+    removeSongFromPlaylists(id);
+}
+function removeSongFromPlayer(id) {
+    const songIndex = player.songs.indexOf(getSong(id));
+    player.songs.splice(songIndex, 1);
+}
+function removeSongFromPlaylists(id) {
+    for(let playlist of player.playlists) {
+        const songIndex = playlist.songs.indexOf(id);
+        if(songIndex !== -1) {
+            playlist.songs.splice(songIndex, 1);
+        }
+    }
+}
+
+function existError() {
+    throw 'this id already exist!';
+}
+function notExistError() {
+    throw 'this id does not exist!';
+}
+function isIdExist(arr, id) {
+    return arr.find(x => x.id === id) !== undefined;
+}
+
 const player = {
     songs: [
         {
