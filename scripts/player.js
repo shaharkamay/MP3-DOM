@@ -114,7 +114,7 @@ const player = {
             title: "Shiroyama",
             album: "The Last Stand",
             artist: "Sabaton",
-            duration: 14,
+            duration: 213,
             coverArt: "./images/cover_art/sabaton_shiroyama.jpg",
         },
         {
@@ -130,7 +130,7 @@ const player = {
             title: "All is One",
             album: "All is One",
             artist: "Orphaned Land",
-            duration: 50,
+            duration: 270,
             coverArt: "./images/cover_art/orphaned_land_all_is_one.jpg",
         },
         {
@@ -138,7 +138,7 @@ const player = {
             title: "As a Stone",
             album: "Show Us What You Got",
             artist: "Full Trunk",
-            duration: 9,
+            duration: 259,
             coverArt: "./images/cover_art/full_trunk_as_a_stone.jpg",
         },
         {
@@ -146,7 +146,7 @@ const player = {
             title: "Sons of Winter and Stars",
             album: "Time I",
             artist: "Wintersun",
-            duration: 21,
+            duration: 811,
             coverArt: "./images/cover_art/wintersun_sons_of_winter_and_stars.jpg",
         },
     ],

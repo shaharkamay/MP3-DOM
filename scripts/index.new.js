@@ -54,11 +54,13 @@ function handleAddSongEvent(event) {
     for(const elem of inputs) {
         if(elem.tagName === 'INPUT') values.push(elem.value);
     }
-    const [title, album, artist, duration, coverArt] = values;
-    const newSongId = addSong(title, album, artist, duration, coverArt);
-    songs = sortObjectsArray(player.songs, 'title');
-    const songIndex = getSongIndex(songs, newSongId);
-    addSongElementInOrder(createSongElement(songs[songIndex]), songIndex);
+    if(values.every((value) => value !== '')) {
+        const [title, album, artist, duration, coverArt] = values;
+        const newSongId = addSong(title, album, artist, duration, coverArt);
+        songs = sortObjectsArray(player.songs, 'title');
+        const songIndex = getSongIndex(songs, newSongId);
+        addSongElementInOrder(createSongElement(songs[songIndex]), songIndex);
+    } else alert('Fill All Inputs!');
 }
 
 /**
@@ -201,7 +203,11 @@ let globalResetSongsTimeout = null;
 generateSongs();
 generatePlaylists();
 const addSection = document.getElementById('add-button');
-addSection.addEventListener('click', () => document.getElementById('inputs').style.display = "block");
+addSection.addEventListener('click', (event) => {
+    const display = event.target.nextElementSibling.style.display;
+    if(display === 'none') event.target.nextElementSibling.style.display = 'block';
+    else event.target.nextElementSibling.style.display = 'none';
+});
 
 // Making the add-song-button actually do something
 document.getElementById("addSong").addEventListener("click", handleAddSongEvent)
@@ -317,7 +323,7 @@ function changeTextContent(elemId, text) {
 function updatePlaylistsDiv() {
     const playlistsDiv = document.getElementById('playlists');
     for(const playlistDiv of playlistsDiv.children) {
-            if(playlistDiv.tagName === 'DIV') {
+        if(playlistDiv.tagName === 'DIV') {
             const playlistId = Number(playlistDiv.id.replace('playlist', ''));
             playlistDiv.lastElementChild.textContent = `songs: ${getPlaylist(playlistId).songs.length}`;
         }
